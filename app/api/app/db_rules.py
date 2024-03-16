@@ -3,6 +3,10 @@ import pandas as pd
 
 
 async def create_connection(params):
+    """
+    Create a new connection with the postgreSQL
+    database
+    """
     conn = None
     try:
         print('Connecting to the PostgreSQL database')
@@ -23,6 +27,9 @@ async def create_connection(params):
 
 
 def close_connection(cur, conn):
+    """
+     Close the connection with the postgreSQL database
+    """
     try:
         cur.close()
         if conn is not None:
@@ -33,6 +40,9 @@ def close_connection(cur, conn):
 
 
 def pg_to_pd(cur, query, columns):
+    """
+    Return the select result as panda dataframe
+    """
     try:
         cur.execute(query)
     except (Exception, psycopg2.DatabaseError) as error:

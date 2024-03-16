@@ -1,19 +1,18 @@
-FROM python:3.8.0-buster
+# Python 3.8 in docker images
+FROM python:3.8
 
-# Make a directory for our application
-WORKDIR /application
+# Directory of work
+WORKDIR /ingest
 
 # Install dependencies
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-# Make a directory for persisting ETL data
-RUN mkdir -p /etl/data
+# Copy our code for synchronizing the spin-up of interdependent services
+COPY wait-for-it.sh /usr/wait-for-it.sh
 
 # Copy our source code
-COPY etl.py .
+COPY ./app ./app
 
-# Run the ETL
-CMD ["python","etl.py"]
-
-ENTRYPOINT ["top", "-b"]
+# Run the wait-for-it
+RUN chmod +x /usr/wait-for-it.sh

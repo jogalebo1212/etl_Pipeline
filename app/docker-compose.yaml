@@ -1,4 +1,53 @@
-FROM ubuntu:latest
-LABEL authors="gabyt"
+# Version of docker-compose
+version: '3.1'
 
-ENTRYPOINT ["top", "-b"]
+# Services of the application
+services:
+# Postgres container the kind of image, the username, password and port
+  db:
+      container_name: pg_container
+      image: postgres
+      restart: always
+      environment:
+          POSTGRES_USER: "postgres"
+          POSTGRES_PASSWORD: "example"
+          POSTGRES_DB: "db"
+          POSTGRES_HOST_AUTH_METHOD: trust
+      ports:
+          - "5432:5432"
+      networks:
+        - postgres
+
+# Container for the source of data in centos, on which we define the name, networks
+  centos:
+    image: centos
+    networks:
+      - postgres
+
+# Container for the ingestion of data, on which we define the name, networks, etc... here we define the volume of our ingest data
+  ingestion:
+      build: ./ingest/
+      container_name: ingest
+      networks:
+        - postgres
+      depends_on:
+        - db
+      command: bash -c "/usr/wait-for-it.sh --timeout=0 db:5432 && python -u ./app/main.py"
+      volumes:
+      - ./ingest/app/data:/ingest/app/data/:z
+
+# Container for API REST , where we define the port, networks and dependencies
+  api:
+      build: ./api/
+      container_name: api
+      ports:
+          - "8080:8080"
+      networks:
+        - postgres
+      depends_on:
+        - ingestion
+
+# Defiition of the networks of our application
+networks:
+  postgres:
+    driver: bridge
