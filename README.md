@@ -8,6 +8,6 @@ Here we have the the image that shows a dataset with 11 columns. We recognize an
 
 ![er_prueba](https://github.com/jogalebo1212/etl_Pipeline/assets/96273010/5a389e4d-388f-4777-b288-77604c0dd178)
 
-
+Finally we get all together and we have the project.
 
 
